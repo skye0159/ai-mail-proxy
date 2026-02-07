@@ -13,17 +13,17 @@ export default async function handler(req, res) {
 
     // Map your Prompt_IDs to your LONG prompt texts (internal instructions)
     const PROMPTS = {
-      P1_SHORT:
+      P1:
         "Rewrite the email to be shorter and more concise while keeping all key information unchanged. Do not change the structure, paragraphing, or order of the text.",
-      P2_STRUCTURE:
+      P2:
         "Improve the clarity and structure of the email (e.g., clearer paragraphs or flow) without changing the content or meaning.",
-      P3_PROFESSIONAL:
+      P3:
         "Rewrite the email in a professional and appropriate tone for the workplace, focusing on formality and professionalism, while keeping the content unchanged. Do not change the structure, paragraphing, or order of the text. Also pay attention to professional greetings and farewells.",
-      P4_ERRORCHECK:
+      P4:
         "Carefully review the email for potential errors, ambiguities, or imprecise wording. Revise the text to eliminate uncertainty, clearly state figures and assessments, and ensure that the information cannot be misunderstood, without adding any new information. Do not change the structure, paragraphing, or order of the text.",
-      P5_CONFIDENT:
+      P5:
         "Rewrite the email so that it sounds clearly confident and self-assured. Use decisive and assertive wording, reduce hedging expressions (e.g., “around”, “currently considered”, “at this stage”), and state assessments more directly, while keeping all factual information unchanged. Do not change the structure, paragraphing, or order of the text.",
-      P6_POLITE:
+      P6:
         "Rewrite the email to sound very polite and considerate in tone. Use courteous and respectful language, such as a friendly opening and closing (e.g., a brief polite greeting and a friendly goodbye), and soften direct phrasing where appropriate, while keeping the content unchanged. Do not change the structure, paragraphing, or order of the text."
     };
 
