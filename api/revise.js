@@ -82,22 +82,39 @@ export default async function handler(req, res) {
       return res.status(500).json({
         error: "OpenAI request failed.",
         openai_status: response.status,
-        details: errText.slice(0, 2000) // keep response small
+        details: errText.slice(0, 2000)
       });
     }
 
     const data = await response.json();
 
-    // Some responses may not populate output_text; add a robust fallback.
-    const revised =
-      (typeof data.output_text === "string" && data.output_text.trim()) ||
-      "";
+    // ---------- ROBUST OUTPUT EXTRACTION ----------
+    let revised = "";
+
+    // 1) If output_text exists, use it
+    if (typeof data.output_text === "string" && data.output_text.trim()) {
+      revised = data.output_text.trim();
+    }
+
+    // 2) Otherwise, read from data.output[].content[] where type === "output_text"
+    if (!revised && Array.isArray(data.output)) {
+      for (const item of data.output) {
+        if (item && item.type === "message" && Array.isArray(item.content)) {
+          const part = item.content.find(
+            (c) => c && c.type === "output_text" && typeof c.text === "string"
+          );
+          if (part && part.text && part.text.trim()) {
+            revised = part.text.trim();
+            break;
+          }
+        }
+      }
+    }
 
     if (!revised) {
-      console.error("No output_text returned. Full response:", JSON.stringify(data).slice(0, 4000));
-
+      console.error("No revised text returned. Full response:", JSON.stringify(data).slice(0, 4000));
       return res.status(500).json({
-        error: "No output_text returned by model.",
+        error: "No revised text returned by model.",
         details: JSON.stringify(data).slice(0, 2000)
       });
     }
