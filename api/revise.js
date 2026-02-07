@@ -1,3 +1,4 @@
+const VERSION = "v2-parser";
 export default async function handler(req, res) {
 
   // ---------- CORS HEADERS ----------
@@ -119,10 +120,10 @@ export default async function handler(req, res) {
       });
     }
 
-    return res.status(200).json({ revised_email: revised });
+    return res.status(200).json({ revised_email: revised, version: VERSION });
 
   } catch (e) {
     console.error("Server error:", e);
-    return res.status(500).json({ error: "Server error.", details: String(e) });
+    return res.status(500).json({ error: "v2: no revised text", details: ... });
   }
 }
