@@ -1,3 +1,3 @@
 export default function Home() {
-  return <div>API proxy running</div>;
+  return <div>HELLO-TEST-123</div>;
 }
