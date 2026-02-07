@@ -1,5 +1,16 @@
 export default async function handler(req, res) {
-  // Allow only POST
+
+  // ---------- CORS HEADERS (MUSS GANZ OBEN STEHEN) ----------
+  res.setHeader("Access-Control-Allow-Origin", "*");
+  res.setHeader("Access-Control-Allow-Methods", "POST, OPTIONS");
+  res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
+
+  // ---------- HANDLE PREFLIGHT (OPTIONS) ----------
+  if (req.method === "OPTIONS") {
+    return res.status(200).end();
+  }
+
+  // ---------- ALLOW ONLY POST AFTER PREFLIGHT ----------
   if (req.method !== "POST") {
     return res.status(405).json({ error: "Method not allowed. Use POST." });
   }
@@ -11,7 +22,7 @@ export default async function handler(req, res) {
       return res.status(400).json({ error: "Missing prompt_id or email_text." });
     }
 
-    // Map your Prompt_IDs to your LONG prompt texts (internal instructions)
+    // Map Prompt_IDs to instructions
     const PROMPTS = {
       P1:
         "Rewrite the email to be shorter and more concise while keeping all key information unchanged. Do not change the structure, paragraphing, or order of the text.",
@@ -45,6 +56,7 @@ export default async function handler(req, res) {
       "Return only the revised email text. Do not add explanations or comments."
     ].join(" ");
 
+    // ⚠️ EMPFEHLUNG: stabiles Modell für Tests
     const response = await fetch("https://api.openai.com/v1/responses", {
       method: "POST",
       headers: {
@@ -52,8 +64,7 @@ export default async function handler(req, res) {
         "Content-Type": "application/json"
       },
       body: JSON.stringify({
-        model: "gpt-5",
-        reasoning: { effort: "low" },
+        model: "gpt-4o-mini",
         instructions: system,
         input: [
           {
@@ -81,6 +92,7 @@ export default async function handler(req, res) {
     }
 
     return res.status(200).json({ revised_email: revised });
+
   } catch (e) {
     return res.status(500).json({ error: "Server error.", details: String(e) });
   }
