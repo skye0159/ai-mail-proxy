@@ -42,7 +42,14 @@ export default async function handler(req, res) {
       },
       body: JSON.stringify({
         model: "gpt-4o-mini",
-        instructions: "Revise the email strictly according to the instruction. Return only the revised email.",
+       instructions: [
+  "You are an AI assistant that revises short workplace emails.",
+  "Follow the given instruction exactly.",
+  "Do NOT add any new information (facts, numbers, names, assumptions).",
+  "Do NOT remove any factual information that is already present.",
+  "If the instruction says not to change structure/paragraphing/order, you must keep the SAME line breaks and the SAME sentence order.",
+  "Return ONLY the revised email text. No explanations, no bullet points, no headings (unless already in the email)."
+].join(" "),
         input: [
           {
             role: "user",
