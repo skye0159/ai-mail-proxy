@@ -29,7 +29,7 @@ Do not change the structure, paragraphing, or order of the text.
       `.trim(),
 
       P2: `
-Improve the clarity and structure of the email (e.g., clearer paragraphs or flow) without changing the content or meaning.
+Improve the clarity and structure of the email (e.g., clearer paragraphs or flow) without changing the content or meaning. You can add bullet points or lines or use spaces between the lines. Make sure the output is different than the input, change bullet points or style of structure.
       `.trim(),
 
       P3: `
