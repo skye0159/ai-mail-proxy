@@ -13,13 +13,14 @@ export default async function handler(req, res) {
   }
 
   try {
-    const { prompt_id, email_text, scenario_id } = req.body || {};
+    // ✅ NEW: read previous_email from request body
+    const { prompt_id, email_text, previous_email, scenario_id } = req.body || {};
 
     if (!prompt_id || !email_text) {
       return res.status(400).json({ error: "Missing prompt_id or email_text." });
     }
 
-    // --- Prompts (P1..P6) with embedded guardrails (no extra model instructions needed) ---
+    // --- Prompts (P1..P6) with embedded guardrails ---
     const PROMPTS = {
       P1: `
 Rewrite the email to be shorter and more concise.
@@ -90,12 +91,26 @@ Return only the revised email text. Do not add explanations or comments.
       return res.status(400).json({ error: "Invalid prompt_id." });
     }
 
-    // --- Minimal system prompt (optional; now redundant but harmless) ---
+    // --- Minimal system prompt (optional; redundant but harmless) ---
     const system = [
       "You revise short workplace emails.",
       "Follow the given instruction.",
       "Return ONLY the revised email text. No explanations.",
     ].join(" ");
+
+    // ✅ NEW: Build user content with optional PREVIOUS VERSION context
+    // We only include PREVIOUS VERSION if it was provided (e.g., for P2).
+    const prevBlock =
+      previous_email && String(previous_email).trim()
+        ? `PREVIOUS VERSION (for comparison):\n${String(previous_email).trim()}\n\n`
+        : "";
+
+    const userContent =
+      `Scenario: ${scenario_id || "unknown"}\n` +
+      `Prompt_ID: ${prompt_id}\n` +
+      `Instruction: ${instruction}\n\n` +
+      prevBlock +
+      `EMAIL TO REVISE:\n${email_text}`;
 
     const response = await fetch("https://api.openai.com/v1/responses", {
       method: "POST",
@@ -110,11 +125,7 @@ Return only the revised email text. Do not add explanations or comments.
         input: [
           {
             role: "user",
-            content:
-              `Scenario: ${scenario_id || "unknown"}\n` +
-              `Prompt_ID: ${prompt_id}\n` +
-              `Instruction: ${instruction}\n\n` +
-              `EMAIL:\n${email_text}`,
+            content: userContent,
           },
         ],
       }),
